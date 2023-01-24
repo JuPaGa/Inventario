@@ -10,7 +10,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Date;
 import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import modelo.Producto;
@@ -27,6 +29,23 @@ public class ControladorProducto implements ActionListener {
     ProductoDAO productodao = new ProductoDAO();
     Interfaz vista = new Interfaz();
     DefaultTableModel modeloTabla = new DefaultTableModel();
+    
+    private int id;
+    private String nombre;
+    private String tipo_material;
+    private String marca;
+    private String modelo;
+    private String num_serie;
+    private String caracteristicas;
+    private String direccion_ip;
+    private String aula;
+    private String centro_formativo;
+    private String observaciones;
+    private boolean incidencia;
+    private Date fecha_compra;
+    private String proveedor;
+    private int cantidad;
+    
 
     public ControladorProducto(Interfaz vista) {
 
@@ -43,9 +62,8 @@ public class ControladorProducto implements ActionListener {
         vista.getBtnDelete().addActionListener(this);
         vista.getBtnClean().addActionListener(this);
         vista.getTblTabla().addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e){
+            public void mouseClicked(MouseEvent e) {
                 llenarCampos(e);
-                
             }
         });
     }
@@ -83,10 +101,108 @@ public class ControladorProducto implements ActionListener {
         vista.getTxtCantidad().setText(vista.getTblTabla().getModel().getValueAt(traget.getSelectedRow(), 14).toString());
     
     }
+    
+    //=================================================================================== Validar formulario//
+    private boolean validadDatos(){
+        if ("".equals(vista.getTxtNombre().getText()) /*|| "".equals(vista.getTxtTipoMate().getText()) || "".equals(vista.getTxtNumSerie().getText()) || "".equals(vista.getTxtAula().getText()) || "".equals(vista.getTxtCentroFormativo().getText())  || "".equals(vista.getCheckBoxIncidencia().getText()) || "".equals(vista.getTxtCantidad().getText())*/ ) {
+            JOptionPane.showMessageDialog(null, "Los campos no pueden ser vacios", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        return true;
+    } //Errores tambien aqui
+    
+    private boolean cargarDatos() {
+        try {
+            
+            nombre = vista.getTxtNombre().getText();
+            tipo_material = vista.getTxtTipoMate().getText();
+            marca = vista.getTxtMarca().getText();
+            modelo = vista.getTxtModelo().getText();
+            num_serie = vista.getTxtNumSerie().getText();
+            caracteristicas = vista.getTxtCaracteristicas().getText();
+            direccion_ip = vista.getTxtDireccionIP().getText();
+            aula = vista.getTxtAula().getText();
+            centro_formativo = vista.getTxtCentroFormativo().getText();
+            observaciones = vista.getTxtAreaObservaciones().getText();
+            incidencia = vista.getCheckBoxIncidencia().isSelected();
+            fecha_compra = Date.valueOf(vista.getTxtFechaCompra().getText());
+            proveedor = vista.getTxtProveedor().getText();
+            cantidad = Integer.parseInt(vista.getTxtCantidad().getText());
+            
+            return true;
+
+            
+        } catch (NumberFormatException e) {
+            //JOptionPane.showMessageDialog(null, "Los campos no pueden ser vacios", "Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("Error al cagar datos: "+ e);
+            return false;
+        }
+        
+    }
+    
+    private void cleanCampos() {
+        
+        vista.getTxtNombre().setText("");
+        vista.getTxtTipoMate().setText("");
+        vista.getTxtMarca().setText("");
+        vista.getTxtModelo().setText("");
+        vista.getTxtNumSerie().setText("");
+        vista.getTxtCaracteristicas().setText("");
+        vista.getTxtDireccionIP().setText("");
+        vista.getTxtAula().setText("");
+        vista.getTxtCentroFormativo().setText("");
+        vista.getTxtAreaObservaciones().setText("");
+        vista.getCheckBoxIncidencia().setSelected(false);
+        vista.getTxtFechaCompra().setText("");
+        vista.getTxtProveedor().setText("");
+        vista.getTxtCantidad().setText("");
+        
+        nombre = "";
+        tipo_material = "";
+        marca = "";
+        modelo = "";
+        num_serie = "";
+        caracteristicas = "";
+        direccion_ip = "";
+        aula = "";
+        centro_formativo = "";
+        observaciones = "";
+        incidencia = false;
+        fecha_compra = null;
+        proveedor = "";
+        cantidad = 0;
+        
+        
+        
+    }
+    
+    private void añadirProducto() {
+        try {
+            
+            if (validadDatos()) {
+                if(cargarDatos()) {
+                    Producto producto = new Producto(nombre, tipo_material, marca, modelo, num_serie, caracteristicas, direccion_ip, aula, centro_formativo, observaciones, incidencia, fecha_compra, proveedor, cantidad);
+                    productodao.agregar(producto);
+                    JOptionPane.showMessageDialog(null, "Registro exitoso");
+                    cleanCampos();
+                }
+            }
+            
+        } catch (Exception e) {
+            System.out.println("Error al añadir producto: "+ e);
+        } finally {
+            listarTabla();
+        }
+    } //Errores aqui... voler a ver el video 6 y verificar
+    
 
     @Override
     public void actionPerformed(ActionEvent ae) {
-
+        
+        if (ae.getSource()== vista.getBtnAnadir()) {
+            añadirProducto();
+        }
+        
     }
 
 }

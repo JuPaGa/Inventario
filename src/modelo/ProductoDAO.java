@@ -55,9 +55,43 @@ public class ProductoDAO {
             }
             
         } catch (SQLException e) {
-            System.out.println("Error listar:"+ e);
+            System.out.println("Error listar: "+ e);
         }
         return lista;
         
     }// Fin metodo Listar
+    
+    //Metodo agregar
+    
+    public void agregar(Producto producto) {
+        
+        String sql = "insert into productos (nombre, tipo_material, marca, modelo, num_serie, caracteristicas, direccion_ip, aula, centro_formativo, observaciones, incidencia, fecha_compra, proveedor, cantidad) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        try {
+            
+            con = conexion.conectarBD();
+            ps = conexion.prepareStatement(sql);
+            
+            ps.setString( 1, producto.getNombre());
+            ps.setString(2, producto.getTipo_material());
+            ps.setString(3, producto.getMarca());
+            ps.setString(4, producto.getModelo());
+            ps.setString(5, producto.getNum_serie());
+            ps.setString(6, producto.getCaracteristicas());
+            ps.setString(7, producto.getDireccion_ip());
+            ps.setString(8, producto.getAula());
+            ps.setString(9, producto.getCentro_formativo());
+            ps.setString(10, producto.getObservaciones());
+            ps.setBoolean(11, producto.isIncidencia());
+            ps.setDate(12, producto.getFecha_compra());
+            ps.setString(13, producto.getProveedor());
+            ps.setInt(14, producto.getCantidad());
+            
+            ps.executeUpdate();
+            
+        } catch (SQLException e) {
+            System.out.println("Error en agrgar: "+ e);
+        }
+        
+    }// Fin metodo agregar
+    
 }// Fin clase
